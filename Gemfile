@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in cocoapods-local-backup.gemspec
+# Specify your gem's dependencies in cocoapods-backup.gemspec
 gemspec
 
 group :development do

@@ -1,1 +1,1 @@
-require 'cocoapods-local-backup/command'
+require 'cocoapods-backup/command'

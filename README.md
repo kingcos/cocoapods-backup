@@ -1,10 +1,10 @@
-# cocoapods-local-backup
+# cocoapods-backup
 
-A description of cocoapods-local-backup.
+A description of cocoapods-backup.
 
 ## Installation
 
-    $ gem install cocoapods-local-backup
+    $ gem install cocoapods-backup
 
 ## Usage
 

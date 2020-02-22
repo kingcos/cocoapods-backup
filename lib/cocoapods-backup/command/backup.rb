@@ -18,10 +18,10 @@ module Pod
     #       in the `plugins.json` file, once your plugin is released.
     #
     class Backup < Command
-      self.summary = 'Short description of cocoapods-local-backup.'
+      self.summary = 'Short description of cocoapods-backup.'
 
       self.description = <<-DESC
-        Longer description of cocoapods-local-backup.
+        Longer description of cocoapods-backup.
       DESC
 
       self.arguments = 'NAME'
@@ -37,7 +37,7 @@ module Pod
       end
 
       def run
-        UI.puts "Add your implementation for the cocoapods-local-backup plugin in #{__FILE__}"
+        UI.puts "Add your implementation for the cocoapods-backup plugin in #{__FILE__}"
       end
     end
   end
