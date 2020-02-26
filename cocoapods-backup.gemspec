@@ -5,12 +5,12 @@ require 'cocoapods-backup/gem_version.rb'
 
 Gem::Specification.new do |spec|
   spec.name          = 'cocoapods-backup'
-  spec.version       = CocoapodsBackup::VERSION
+  spec.version       = '0.0.1'
   spec.authors       = ['kingcos']
   spec.email         = ['2821836721v@gmail.com']
-  spec.description   = %q{A short description of cocoapods-backup.}
-  spec.summary       = %q{A longer description of cocoapods-backup.}
-  spec.homepage      = 'https://github.com/EXAMPLE/cocoapods-backup'
+  spec.description   = %q{Using current sources for your pods.}
+  spec.summary       = %q{Using current sources for your pods.}
+  spec.homepage      = 'https://github.com/kingcos/cocoapods-backup'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
