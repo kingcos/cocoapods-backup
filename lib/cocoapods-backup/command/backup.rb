@@ -1,44 +1,57 @@
 module Pod
-  class Command
-    # This is an example of a cocoapods plugin adding a top-level subcommand
-    # to the 'pod' command.
-    #
-    # You can also create subcommands of existing or new commands. Say you
-    # wanted to add a subcommand to `list` to show newly deprecated pods,
-    # (e.g. `pod list deprecated`), there are a few things that would need
-    # to change.
-    #
-    # - move this file to `lib/pod/command/list/deprecated.rb` and update
-    #   the class to exist in the the Pod::Command::List namespace
-    # - change this class to extend from `List` instead of `Command`. This
-    #   tells the plugin system that it is a subcommand of `list`.
-    # - edit `lib/cocoapods_plugins.rb` to require this file
-    #
-    # @todo Create a PR to add your plugin to CocoaPods/cocoapods.org
-    #       in the `plugins.json` file, once your plugin is released.
-    #
-    class Backup < Command
-      self.summary = 'Short description of cocoapods-backup.'
+    class Podfile
+        module DSL
+            # Saving original pod method
+            pod_method = instance_method(:pod)
 
-      self.description = <<-DESC
-        Longer description of cocoapods-backup.
-      DESC
+            # Exchanging methods
+            define_method(:pod) do |name, *args|
+                unless args.last.is_a?(Hash)
+                    # Calling original pod method
+                    pod_method.bind(self).(name, *args)
+                    return
+                end
 
-      self.arguments = 'NAME'
+                # :backup => true
+                should_backup = args.last.delete(:backup)
+                sandbox = Config.instance.sandbox
 
-      def initialize(argv)
-        @name = argv.shift_argument
-        super
-      end
+                if should_backup
+                    # 1. Finding MyPod.podspec.json
+                    podspec_json_filename = "#{name}.podspec.json"
+                    # /Users/kingcos/Project/Pods/Local Podspecs/MyPod.podspec.json
+                    podspec_json_org_path = sandbox.specifications_root + podspec_json_filename
+                    # /Users/kingcos/Project/Pods/MyPod
+                    pod_source_path = sandbox.sources_root + name
+                    # /Users/kingcos/Project/Pods/MyPod/MyPod.podspec.json
+                    podspec_json_dest_path = pod_source_path + podspec_json_filename
 
-      def validate!
-        super
-        help! 'A Pod name is required.' unless @name
-      end
+                    if !podspec_json_org_path.exist?
+                        Pod::UI.warn "[Skipped] Cannot finding #{name}.podspec.json in #{sandbox.specifications_root}"
 
-      def run
-        UI.puts "Add your implementation for the cocoapods-backup plugin in #{__FILE__}"
-      end
+                        pod_method.bind(self).(name, *args)
+                        return
+                    end
+
+                    # 2. ln -s Pods/Local Podspecs/MyPod.podspec.json Pods/MyPod/MyPod.podspec.json
+                    File.symlink(podspec_json_org_path, podspec_json_dest_path) unless File.symlink? (podspec_json_dest_path)
+
+                    # 3. Using :path => 'Pods/MyPod'
+                    args.last[:path] = pod_source_path.to_s
+
+                    # 4. Removing :git / :tag / :branch settings
+                    args.last.delete(:git)
+                    args.last.delete(:tag)
+                    args.last.delete(:branch)
+                    args.last.delete(:commit)
+
+                    # PS: I don't know whether it's necessary for svn users
+                    # args.last.delete(:svn)
+                end
+
+                # 5. Calling original pod method
+                pod_method.bind(self).(name, *args)
+            end
+        end
     end
-  end
 end
