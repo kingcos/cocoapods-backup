@@ -17,17 +17,20 @@ module Pod
                 sandbox = Config.instance.sandbox
 
                 if should_backup
+                    # 0. Fixed when subspec (eg. pod 'OHHTTPStubs/Swift', only OHHTTPStubs.podspec.json exists)
+                    pod_name = name.split("/")[0]
+
                     # 1. Finding MyPod.podspec.json
-                    podspec_json_filename = "#{name}.podspec.json"
+                    podspec_json_filename = "#{pod_name}.podspec.json"
                     # /Users/kingcos/Project/Pods/Local Podspecs/MyPod.podspec.json
                     podspec_json_org_path = sandbox.specifications_root + podspec_json_filename
                     # /Users/kingcos/Project/Pods/MyPod
-                    pod_source_path = sandbox.sources_root + name
+                    pod_source_path = sandbox.sources_root + pod_name
                     # /Users/kingcos/Project/Pods/MyPod/MyPod.podspec.json
                     podspec_json_dest_path = pod_source_path + podspec_json_filename
 
                     if !podspec_json_org_path.exist?
-                        Pod::UI.warn "[Skipped] Cannot finding #{name}.podspec.json in #{sandbox.specifications_root}"
+                        Pod::UI.warn "[Skipped] Cannot finding #{pod_name}.podspec.json in #{sandbox.specifications_root}"
 
                         pod_method.bind(self).(name, *args)
                         return
