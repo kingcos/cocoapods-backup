@@ -6,7 +6,7 @@
 
 ## 用途
 
-当我们在 `Podfile` 中声明一个 `pod 'SomePod'` 时，表示我们需要引入该 Pod 并集成至相应的 Targe；当执行 `pod install` 时，CocoaPods 将执行解析依赖关系、下载依赖、校验 Target、生成 Pods 工程等步骤。这时如果无法连接到网络（或者远程库在不便于连接的内网），那么使用该插件即可将原本联网获取的 Pod 库通过**本地路径**依赖。
+当我们在 `Podfile` 中声明一个 `pod 'SomePod'` 时，表示我们需要引入该 Pod 并集成至相应的 Target；当执行 `pod install` 时，CocoaPods 将执行解析依赖关系、下载依赖、校验 Target、生成 Pods 工程等步骤。这时如果无法连接到网络（或者远程库在不便于连接的内网），那么使用该插件即可将原本联网获取的 Pod 库通过**本地路径**依赖。
 
 ## 安装
 
@@ -28,7 +28,7 @@ gem 'cocoapods-backup'
 pod 'AFNetworking',
     :git => 'git@github.com:AFNetworking/AFNetworking.git',
     :tag => '2.6.3',
-    :backup => true # 标志该 Pod 优先以本地备份源码为主
+    :backup => true # 标志该 Pod 将作为本地备份的源码引入
 ```
 
 ## 版本
