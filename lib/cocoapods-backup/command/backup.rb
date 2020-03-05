@@ -17,27 +17,33 @@ module Pod
                 sandbox = Config.instance.sandbox
 
                 if should_backup
-                    # 0. Fixed when subspec (eg. pod 'OHHTTPStubs/Swift', only OHHTTPStubs.podspec.json exists)
+                    # 0. Using pod when only import subspec
+                    # (eg. pod 'OHHTTPStubs/Swift', only OHHTTPStubs.podspec.json exists)
                     pod_name = name.split("/")[0]
 
                     # 1. Finding MyPod.podspec.json
                     podspec_json_filename = "#{pod_name}.podspec.json"
-                    # /Users/kingcos/Project/Pods/Local Podspecs/MyPod.podspec.json
-                    podspec_json_org_path = sandbox.specifications_root + podspec_json_filename
-                    # /Users/kingcos/Project/Pods/MyPod
-                    pod_source_path = sandbox.sources_root + pod_name
-                    # /Users/kingcos/Project/Pods/MyPod/MyPod.podspec.json
-                    podspec_json_dest_path = pod_source_path + podspec_json_filename
+                    # Pods/Local Podspecs/ + MyPod.podspec.json
+                    podspec_json_original_path = Pathname.new("Pods/Local Podspecs") + podspec_json_filename
+                    # Pods/MyPod
+                    pod_source_path = Pathname.new("Pods") + pod_name
+                    # Pods/MyPod/MyPod.podspec.json
+                    podspec_json_dest_path = Pathname.new("Pods/#{pod_name}") + podspec_json_filename
 
-                    if !podspec_json_org_path.exist?
-                        Pod::UI.warn "[Skipped] Cannot finding #{pod_name}.podspec.json in #{sandbox.specifications_root}"
-
+                    if !podspec_json_original_path.exist?
+                        Pod::UI.warn "[cocoapods-backup] Cannot finding #{pod_name}.podspec.json in your Pods/Local Podspecs path."
                         pod_method.bind(self).(name, *args)
                         return
                     end
 
                     # 2. ln -s Pods/Local Podspecs/MyPod.podspec.json Pods/MyPod/MyPod.podspec.json
-                    File.symlink(podspec_json_org_path, podspec_json_dest_path) unless File.symlink? (podspec_json_dest_path)
+                    if File.symlink? (podspec_json_dest_path)
+                        File.delete(podspec_json_dest_path)
+                    end
+
+                    # Note: symbolic link with relative path on macOS (ln -s ../some_dir/file file)
+                    # ln -s ../../Pods/Local Podspecs/MyPod.podspec.json Pods/AdyenCSE/MyPod.podspec.json
+                    File.symlink("../../" + podspec_json_original_path.to_s, podspec_json_dest_path.to_s)
 
                     # 3. Using :path => 'Pods/MyPod'
                     args.last[:path] = pod_source_path.to_s
