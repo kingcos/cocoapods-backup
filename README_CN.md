@@ -30,3 +30,7 @@ pod 'AFNetworking',
     :tag => '2.6.3',
     :backup => true # 标志该 Pod 优先以本地备份源码为主
 ```
+
+## 版本
+
+详见 [Release 页面](https://github.com/kingcos/cocoapods-backup/releases)。
